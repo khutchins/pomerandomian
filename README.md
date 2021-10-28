@@ -1,6 +1,6 @@
 # Pomerandomian
 
-An interface for randomness that makes it easy to use a flexible, repeatable random.
+An abstract class for randomness that makes it easy to get a flexible, repeatable random number source.
 
 The name is combining the words Pomeranian and Random together. I know it's a reach.
 
@@ -13,5 +13,5 @@ IRandom is an abstract class that allows you to pass around an abstract referenc
 ## Selected Features
 
 * Strings are supported as seeds (they're MD5 hashed down to integers. Standard security warnings about MD5 apply, but if you're doing anything involving security, don't use this).
-* Access the IRandom's seed whenever you want.
+* Access the IRandom's seed (and string seed via raw seed, if created using one) whenever you want.
 * Ability to create child random objects to sequester off a RNG that pulls a non-deterministic number of samples. Environment object sparking randomly when it bounces off a wall? No problem, create a child random for it without affecting the randomness of anything later.
