@@ -1,0 +1,9 @@
+{
+  "name": "com.khutchins.pomerandomian",
+  "displayName": "Pomerandomian",
+  "version": "1.0.0",
+  "unity": "2019.3",
+  "description": "A set of scripts for robust, repeatable random number generation.",
+  "type": "library",
+  "hideInEditor": false
+}
