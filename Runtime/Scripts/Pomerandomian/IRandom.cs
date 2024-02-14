@@ -6,6 +6,12 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Pomerandomian {
+	[System.Serializable]
+	public struct ObjectOdds<T> {
+		public T Object;
+		public int Odds;
+	}
+
 	/// <summary>
 	/// An interface for a RNG that implements several helper functions.
 	/// </summary>
@@ -123,6 +129,27 @@ namespace Pomerandomian {
 				if (num < sum) return array[i];
 			}
 			return array[array.Length - 1];
+		}
+
+		/// <summary>
+		/// Returns a random item from a given array, using the provided weighted odds.
+		/// ObjectOdds can be useful in the inspector.
+		/// </summary>
+		/// <param name="objectOdds">Struct that binds objects and odds.</param>
+		/// <returns>A random item from array, using odds.</returns>
+		public T FromArrayWithOdds<T>(ObjectOdds<T>[] objectOdds) {
+			if (objectOdds == null || objectOdds.Length == 0) return default;
+			int allOdds = objectOdds.Select(x => x.Odds).Sum();
+			if (allOdds < 1) return objectOdds[0].Object;
+
+			int num = Next(0, allOdds);
+			int sum = 0;
+
+			for (int i = 0; i < objectOdds.Length; i++) {
+				sum += objectOdds[i].Odds;
+				if (num < sum) return objectOdds[i].Object;
+			}
+			return objectOdds[objectOdds.Length - 1].Object;
 		}
 
 		/// <summary>
