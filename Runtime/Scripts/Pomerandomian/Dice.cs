@@ -78,6 +78,10 @@ namespace Pomerandomian {
             }
         }
 
+        public int MinRoll {
+            get => Count + Modifier;
+        }
+
         public int MaxRoll {
             get => Count * Sides + Modifier;
         }
