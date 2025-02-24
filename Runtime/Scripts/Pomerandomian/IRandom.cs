@@ -206,5 +206,12 @@ namespace Pomerandomian {
 		public float Next(float min, float max) {
 			return (float)(NextDouble() * (max - min) + min);
 		}
+
+		/// <summary>
+		/// Rolls the given dice configuration and returns the result.
+		/// </summary>
+		public int Roll(Dice dice) {
+			return dice.Roll(this);
+		}
 	}
 }
