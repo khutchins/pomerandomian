@@ -12,6 +12,11 @@ namespace Pomerandomian {
 		public int Odds;
 	}
 
+    public struct ObjectOddsFloat<T> {
+        public T Object;
+        public float Odds;
+    }
+
 	/// <summary>
 	/// An interface for a RNG that implements several helper functions.
 	/// </summary>
@@ -93,43 +98,86 @@ namespace Pomerandomian {
 			return NextDouble() < chance;
 		}
 
-		/// <summary>
-		/// Returns a random item from the given list.
-		/// </summary>
-		public T FromList<T>(IList<T> list) {
+        /// <summary>
+        /// Returns a random item from the given list.
+        /// </summary>
+        [Obsolete("Use From() instead.")]
+        public T FromList<T>(IList<T> list) {
 			return list[Next(0, list.Count)];
 		}
 
-		/// <summary>
-		/// Returns a random item from the given array.
-		/// </summary>
-		public T FromArray<T>(T[] array) {
+        /// <summary>
+        /// Returns a random item from the given array.
+        /// </summary>
+        [Obsolete("Use From() instead.")]
+        public T FromArray<T>(T[] array) {
 			return array[Next(0, array.Length)];
 		}
 
-		/// <summary>
-		/// Returns a random item from a given array, using the provided weighted odds.
-		/// 
-		/// array and odds must be of the same length, or an exception will be thrown.
-		/// </summary>
-		/// <param name="array">Parameter array</param>
-		/// <param name="odds">Odds array</param>
-		/// <returns>A random item from array, using odds.</returns>
-		public T FromArrayWithOdds<T>(T[] array, int[] odds) {
-			if (array.Length != odds.Length) throw new ArgumentException("Array lengths do not match");
-			if (array == null || array.Length == 0) return default;
-			int allOdds = odds.Sum();
-			if (allOdds < 1) return array[0];
-			int num = Next(0, allOdds);
-
-			int sum = 0;
-
-			for (int i = 0; i < array.Length; i++) {
-				sum += odds[i];
-				if (num < sum) return array[i];
-			}
-			return array[array.Length - 1];
+		public T From<T>(IReadOnlyList<T> list) {
+			return list[Next(0, list.Count)];
 		}
+
+        /// <summary>
+        /// Returns a random item from a given array, using the provided weighted odds.
+        /// 
+        /// array and odds must be of the same length, or an exception will be thrown.
+        /// </summary>
+        /// <param name="array">Parameter array</param>
+        /// <param name="odds">Odds array</param>
+        /// <returns>A random item from array, using odds.</returns>
+        [Obsolete("Use FromWithOdds instead.")]
+        public T FromArrayWithOdds<T>(T[] array, int[] odds) {
+			return FromWithOdds<T>(array, odds);
+		}
+
+        /// <summary>
+        /// Returns a random item from a given list, using the provided weighted odds.
+        /// 
+        /// array and odds must be of the same length, or an exception will be thrown.
+        /// </summary>
+        /// <param name="array">Parameter array</param>
+        /// <param name="odds">Odds array</param>
+        /// <returns>A random item from array, using odds.</returns>
+        public T FromWithOdds<T>(IReadOnlyList<T> list, IReadOnlyList<int> odds) {
+            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
+            if (list == null || list.Count == 0) return default;
+            var allOdds = odds.Sum();
+            if (allOdds < 1) return list[0];
+            var num = Next(0, allOdds);
+
+            int sum = 0;
+
+            for (int i = 0; i < list.Count; i++) {
+                sum += odds[i];
+                if (num < sum) return list[i];
+            }
+            return list[list.Count - 1];
+        }
+
+        /// <summary>
+        /// Returns a random item from a given array, using the provided weighted odds.
+        /// 
+        /// array and odds must be of the same length, or an exception will be thrown.
+        /// </summary>
+        /// <param name="array">Parameter array</param>
+        /// <param name="odds">Odds array</param>
+        /// <returns>A random item from array, using odds.</returns>
+        public T FromWithOdds<T>(IReadOnlyList<T> list, IReadOnlyList<float> odds) {
+            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
+            if (list == null || list.Count == 0) return default;
+            var allOdds = odds.Sum();
+            if (allOdds < 1) return list[0];
+            var num = Next(0, allOdds);
+
+            float sum = 0;
+
+            for (int i = 0; i < list.Count; i++) {
+                sum += odds[i];
+                if (num < sum) return list[i];
+            }
+            return list[list.Count - 1];
+        }
 
 		/// <summary>
 		/// Returns a random item from a given array, using the provided weighted odds.
@@ -137,32 +185,65 @@ namespace Pomerandomian {
 		/// </summary>
 		/// <param name="objectOdds">Struct that binds objects and odds.</param>
 		/// <returns>A random item from array, using odds.</returns>
-		public T FromArrayWithOdds<T>(ObjectOdds<T>[] objectOdds) {
-			if (objectOdds == null || objectOdds.Length == 0) return default;
-			int allOdds = objectOdds.Select(x => x.Odds).Sum();
-			if (allOdds < 1) return objectOdds[0].Object;
-
-			int num = Next(0, allOdds);
-			int sum = 0;
-
-			for (int i = 0; i < objectOdds.Length; i++) {
-				sum += objectOdds[i].Odds;
-				if (num < sum) return objectOdds[i].Object;
-			}
-			return objectOdds[objectOdds.Length - 1].Object;
+		[Obsolete("Use FromWithOdds instead.")]
+        public T FromArrayWithOdds<T>(ObjectOdds<T>[] objectOdds) {
+			return FromWithOdds(objectOdds);
 		}
 
-		/// <summary>
-		/// Returns N distinct items from the provided enumerable. 
-		/// If amount is greater than the enumerable length, it will return everything in the list. 
-		/// If you use an unbounded enumerable, this will hang.
-		/// 
-		/// It will not repeat items (unless the item is in the enumerable multiple times).
-		/// </summary>
-		/// <param name="list">Enumerable </param>
-		/// <param name="amount"></param>
-		/// <returns></returns>
-		public IEnumerable<T> PickFromList<T>(IEnumerable<T> list, int amount) {
+        /// <summary>
+        /// Returns a random item from a given list, using the provided weighted odds.
+        /// ObjectOdds can be useful in the inspector.
+        /// </summary>
+        /// <param name="objectOdds">Struct that binds objects and odds.</param>
+        /// <returns>A random item from array, using odds.</returns>
+        public T FromWithOdds<T>(IReadOnlyList<ObjectOdds<T>> objectOdds) {
+            if (objectOdds == null || objectOdds.Count == 0) return default;
+            int allOdds = objectOdds.Select(x => x.Odds).Sum();
+            if (allOdds < 1) return objectOdds[0].Object;
+
+            int num = Next(0, allOdds);
+            int sum = 0;
+
+            for (int i = 0; i < objectOdds.Count; i++) {
+                sum += objectOdds[i].Odds;
+                if (num < sum) return objectOdds[i].Object;
+            }
+            return objectOdds[objectOdds.Count - 1].Object;
+
+        }
+
+        /// <summary>
+        /// Returns a random item from a given array, using the provided weighted odds.
+        /// ObjectOddsFloat can be useful in the inspector.
+        /// </summary>
+        /// <param name="objectOdds">Struct that binds objects and odds.</param>
+        /// <returns>A random item from array, using odds.</returns>
+        public T FromWithOdds<T>(IReadOnlyList<ObjectOddsFloat<T>> objectOdds) {
+            if (objectOdds == null || objectOdds.Count == 0) return default;
+            float allOdds = objectOdds.Select(x => x.Odds).Sum();
+            if (allOdds < 1) return objectOdds[0].Object;
+
+            float num = Next(0, allOdds);
+            float sum = 0;
+
+            for (int i = 0; i < objectOdds.Count; i++) {
+                sum += objectOdds[i].Odds;
+                if (num < sum) return objectOdds[i].Object;
+            }
+            return objectOdds[objectOdds.Count - 1].Object;
+        }
+
+        /// <summary>
+        /// Returns N distinct items from the provided enumerable. 
+        /// If amount is greater than the enumerable length, it will return everything in the list. 
+        /// If you use an unbounded enumerable, this will hang.
+        /// 
+        /// It will not repeat items (unless the item is in the enumerable multiple times).
+        /// </summary>
+        /// <param name="list">Enumerable </param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public IEnumerable<T> PickFromList<T>(IEnumerable<T> list, int amount) {
 			List<T> selected = new List<T>();
 			int total = list.Count();
 

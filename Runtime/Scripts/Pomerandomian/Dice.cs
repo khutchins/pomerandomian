@@ -93,7 +93,7 @@ namespace Pomerandomian {
         }
 
         public static Dice FromString(string input) {
-            input = input.ToLower().Trim();
+            input = input.ToLowerInvariant().Trim();
             input = Regex.Replace(input, @"\s+", "");
             Regex regex = new Regex(@"^(?<numDice>\d+)d(?<sides>\d+)(?<type>[AHDL]?)(?<modifier>[+-]\d+)?$");
             Match match = regex.Match(input);
