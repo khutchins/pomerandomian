@@ -58,13 +58,13 @@ namespace Pomerandomian {
         public DiceResult RollDetailed(IRandom random) {
             SingleRollResult[] rollResults = new SingleRollResult[Count];
             for (int i = 0; i < Count; i++) {
-                rollResults[i] = SubRoll(this, random);
+                rollResults[i] = SubRoll(random);
             }
 
             return new DiceResult(this, rollResults);
         }
 
-        private SingleRollResult SubRoll(Dice dice, IRandom random) {
+        private SingleRollResult SubRoll(IRandom random) {
             if (Type == RollType.Standard) {
                 int roll = IndividualRoll(random);
                 return new SingleRollResult(roll, roll);
@@ -95,7 +95,7 @@ namespace Pomerandomian {
         public static Dice FromString(string input) {
             input = input.ToLowerInvariant().Trim();
             input = Regex.Replace(input, @"\s+", "");
-            Regex regex = new Regex(@"^(?<numDice>\d+)d(?<sides>\d+)(?<type>[AHDL]?)(?<modifier>[+-]\d+)?$");
+            Regex regex = new Regex(@"^(?<numDice>\d+)d(?<sides>\d+)(?<type>[ahdl]?)(?<modifier>[+-]\d+)?$");
             Match match = regex.Match(input);
             if (!match.Success) {
                 return null;
@@ -103,7 +103,7 @@ namespace Pomerandomian {
 
             Group diceGroup = match.Groups["numDice"];
             Group sidesGroup = match.Groups["sides"];
-            Group dropGroup = match.Groups["drop"];
+            Group dropGroup = match.Groups["type"];
             Group modifierGroup = match.Groups["modifier"];
 
             if (!int.TryParse(diceGroup.Value, out int numDice)) {
@@ -115,19 +115,18 @@ namespace Pomerandomian {
             RollType type = RollType.Standard;
             if (dropGroup.Success && dropGroup.Value.Length > 0) {
                 switch (dropGroup.Value) {
-                    case "A":
-                    case "H":
+                    case "a":
+                    case "h":
                         type = RollType.Advantage;
                         break;
-                    case "D":
-                    case "L":
+                    case "d":
+                    case "l":
                         type = RollType.Disadvantage;
                         break;
                     default:
                         return null;
                 }
             }
-            bool isDisadvantage = match.Groups[3].Value == "L";
             int modifier = 0;
             if (modifierGroup.Success && modifierGroup.Length > 0) {
                 if (!int.TryParse(modifierGroup.Value, out modifier)) {
