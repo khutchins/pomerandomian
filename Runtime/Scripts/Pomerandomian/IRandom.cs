@@ -31,12 +31,19 @@ namespace Pomerandomian {
 		abstract public IRandom ChildRandom();
 
 		/// <summary>
-		/// Returns a random integer number between minInclusive and maxExclusive.
+		/// Deterministically derive an independent child random from the parent.
+		/// One way this can be done is by seeding the RNG with the parent seed
+		/// modified by this split id.
 		/// </summary>
-		/// <param name="minInclusive">Minimum integer value, inclusive</param>
-		/// <param name="maxExclusive">Maximum integer value, exclusive</param>
-		/// <returns>Integer between min (inclusive) and max (exclusive).</returns>
-		abstract public int Next(int minInclusive, int maxExclusive);
+		abstract public IRandom Split(int streamId);
+
+        /// <summary>
+        /// Returns a random integer number between minInclusive and maxExclusive.
+        /// </summary>
+        /// <param name="minInclusive">Minimum integer value, inclusive</param>
+        /// <param name="maxExclusive">Maximum integer value, exclusive</param>
+        /// <returns>Integer between min (inclusive) and max (exclusive).</returns>
+        abstract public int Next(int minInclusive, int maxExclusive);
 
 		/// <summary>
 		///  Gets a random double number between 0.0 (inclusive) and 1.0 (exclusive)

@@ -55,5 +55,9 @@ namespace Pomerandomian {
 		public override IRandom ChildRandom() {
 			return new SystemRandom(Next(0, int.MaxValue));
 		}
-	}
+
+        public override IRandom Split(int streamId) {
+            return new SystemRandom(_seed + streamId);
+        }
+    }
 }
