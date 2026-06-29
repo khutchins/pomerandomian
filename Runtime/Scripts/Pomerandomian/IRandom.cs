@@ -66,17 +66,40 @@ namespace Pomerandomian {
 		abstract public object RawSeed { get; }
 
 		/// <summary>
-		/// Converts a string to an integer seed. Because this is an integer and uses 
+		/// Hashes a string into seed material (the 16-byte MD5 of its UTF-8 bytes). This is the
+		/// primitive the typed StringToSeed helpers are built on; use those unless you specifically
+		/// need more bits than they expose. MD5 + UTF-8 are byte-exact across platforms, so the
+		/// result is deterministic everywhere. Standard MD5 security caveats apply: if you're doing
+		/// anything security-sensitive, don't use this.
+		/// </summary>
+		/// <param name="seedStr">String to hash to make seed material.</param>
+		/// <returns>16 bytes of seed material.</returns>
+		public static byte[] StringToSeedBytes(string seedStr) {
+			using (MD5 md5Hash = MD5.Create()) {
+				return md5Hash.ComputeHash(Encoding.UTF8.GetBytes(seedStr));
+			}
+		}
+
+		/// <summary>
+		/// Converts a string to an integer seed. Because this is an integer and uses
 		/// an MD5 hash, it's possible for players to engineer hash collisions against
 		/// a known seed.
 		/// </summary>
 		/// <param name="seedStr">String to hash to make a seed.</param>
 		/// <returns>int value of the passed in string.</returns>
 		public static int StringToSeed(string seedStr) {
-			using (MD5 md5Hash = MD5.Create()) {
-				byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(seedStr));
-				return BitConverter.ToInt32(data, 0);
-			}
+			return BitConverter.ToInt32(StringToSeedBytes(seedStr), 0);
+		}
+
+		/// <summary>
+		/// Converts a string to a 64-bit seed, using more of the hash than StringToSeed. Useful for
+		/// implementations that can seed from a full 64-bit value (e.g. Xoshiro256PpRandom). The same
+		/// MD5 collision caveats apply.
+		/// </summary>
+		/// <param name="seedStr">String to hash to make a seed.</param>
+		/// <returns>ulong value of the passed in string.</returns>
+		public static ulong StringToSeed64(string seedStr) {
+			return BitConverter.ToUInt64(StringToSeedBytes(seedStr), 0);
 		}
 
 		/// <summary>
@@ -171,6 +194,12 @@ namespace Pomerandomian {
         /// <param name="array">Parameter array</param>
         /// <param name="odds">Odds array</param>
         /// <returns>A random item from array, using odds.</returns>
+        /// <remarks>
+        /// This overload sums and compares floating-point weights, which is not guaranteed to be
+        /// bit-identical across platforms or runtimes, even when the underlying generator is
+        /// deterministic. Use the integer-odds overload if you need cross-platform reproducibility
+        /// (e.g. shared seeds or replays).
+        /// </remarks>
         public T FromWithOdds<T>(IReadOnlyList<T> list, IReadOnlyList<float> odds) {
             if (list == null || list.Count == 0) return default;
             if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
@@ -226,6 +255,12 @@ namespace Pomerandomian {
         /// </summary>
         /// <param name="objectOdds">Struct that binds objects and odds.</param>
         /// <returns>A random item from array, using odds.</returns>
+        /// <remarks>
+        /// This overload sums and compares floating-point weights, which is not guaranteed to be
+        /// bit-identical across platforms or runtimes, even when the underlying generator is
+        /// deterministic. Use an integer-odds overload if you need cross-platform reproducibility
+        /// (e.g. shared seeds or replays).
+        /// </remarks>
         public T FromWithOdds<T>(IReadOnlyList<ObjectOddsFloat<T>> objectOdds) {
             if (objectOdds == null || objectOdds.Count == 0) return default;
             float allOdds = objectOdds.Sum(x => x.Odds);
