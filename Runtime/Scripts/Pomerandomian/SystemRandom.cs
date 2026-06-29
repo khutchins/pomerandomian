@@ -62,5 +62,9 @@ namespace Pomerandomian {
 		public ISeededRandom Split(int streamId) {
 			return new SystemRandom(unchecked(_seed + streamId));
 		}
+
+		public ISeededRandom WithSameSeed() {
+			return new SystemRandom(_seed);
+		}
 	}
 }

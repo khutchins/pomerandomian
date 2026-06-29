@@ -28,6 +28,12 @@ namespace Pomerandomian {
 		/// same substream.
 		/// </summary>
 		ISeededRandom Split(int streamId);
+
+		/// <summary>
+		/// Returns a new generator of the same type seeded with this generator's seed, positioned at
+		/// the start of the sequence.
+		/// </summary>
+		ISeededRandom WithSameSeed();
 	}
 
 	public interface ISeeded<out TSeed> : ISeeded {

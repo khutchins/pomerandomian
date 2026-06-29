@@ -85,6 +85,10 @@ namespace Pomerandomian {
 			return new Xoshiro256PpRandom(MixSeed(_seed64, streamId));
 		}
 
+		public ISeededRandom WithSameSeed() {
+			return new Xoshiro256PpRandom(_seed64);
+		}
+
 		/// <summary>
 		/// Advances the state and returns the next raw 64-bit value.
 		/// </summary>
