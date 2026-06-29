@@ -59,7 +59,7 @@ namespace Pomerandomian {
 			return new SystemRandom(Next(0, int.MaxValue));
 		}
 
-		public IRandom Split(int streamId) {
+		public ISeededRandom Split(int streamId) {
 			return new SystemRandom(unchecked(_seed + streamId));
 		}
 	}

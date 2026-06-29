@@ -81,7 +81,7 @@ namespace Pomerandomian {
 			return new Xoshiro256PpRandom(NextULong());
 		}
 
-		public IRandom Split(int streamId) {
+		public ISeededRandom Split(int streamId) {
 			return new Xoshiro256PpRandom(MixSeed(_seed64, streamId));
 		}
 

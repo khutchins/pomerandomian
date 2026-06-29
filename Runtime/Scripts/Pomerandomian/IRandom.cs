@@ -27,7 +27,7 @@ namespace Pomerandomian {
 		/// stream. If this is called on the same random with the same streamId, it will produce the
 		/// same substream.
 		/// </summary>
-		IRandom Split(int streamId);
+		ISeededRandom Split(int streamId);
 	}
 
 	public interface ISeeded<out TSeed> : ISeeded {
