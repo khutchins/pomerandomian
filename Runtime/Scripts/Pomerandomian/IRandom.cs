@@ -12,6 +12,7 @@ namespace Pomerandomian {
 		public int Odds;
 	}
 
+	[System.Serializable]
     public struct ObjectOddsFloat<T> {
         public T Object;
         public float Odds;
@@ -147,8 +148,8 @@ namespace Pomerandomian {
         /// <param name="odds">Odds array</param>
         /// <returns>A random item from array, using odds.</returns>
         public T FromWithOdds<T>(IReadOnlyList<T> list, IReadOnlyList<int> odds) {
-            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
             if (list == null || list.Count == 0) return default;
+            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
             var allOdds = odds.Sum();
             if (allOdds < 1) return list[0];
             var num = Next(0, allOdds);
@@ -171,10 +172,10 @@ namespace Pomerandomian {
         /// <param name="odds">Odds array</param>
         /// <returns>A random item from array, using odds.</returns>
         public T FromWithOdds<T>(IReadOnlyList<T> list, IReadOnlyList<float> odds) {
-            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
             if (list == null || list.Count == 0) return default;
+            if (list.Count != odds.Count) throw new ArgumentException("Array lengths do not match");
             var allOdds = odds.Sum();
-            if (allOdds < 1) return list[0];
+            if (allOdds <= 0) return list[0];
             var num = Next(0, allOdds);
 
             float sum = 0;
@@ -205,7 +206,7 @@ namespace Pomerandomian {
         /// <returns>A random item from array, using odds.</returns>
         public T FromWithOdds<T>(IReadOnlyList<ObjectOdds<T>> objectOdds) {
             if (objectOdds == null || objectOdds.Count == 0) return default;
-            int allOdds = objectOdds.Select(x => x.Odds).Sum();
+            int allOdds = objectOdds.Sum(x => x.Odds);
             if (allOdds < 1) return objectOdds[0].Object;
 
             int num = Next(0, allOdds);
@@ -227,8 +228,8 @@ namespace Pomerandomian {
         /// <returns>A random item from array, using odds.</returns>
         public T FromWithOdds<T>(IReadOnlyList<ObjectOddsFloat<T>> objectOdds) {
             if (objectOdds == null || objectOdds.Count == 0) return default;
-            float allOdds = objectOdds.Select(x => x.Odds).Sum();
-            if (allOdds < 1) return objectOdds[0].Object;
+            float allOdds = objectOdds.Sum(x => x.Odds);
+            if (allOdds <= 0) return objectOdds[0].Object;
 
             float num = Next(0, allOdds);
             float sum = 0;
