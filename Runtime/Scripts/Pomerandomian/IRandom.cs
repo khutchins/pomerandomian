@@ -285,14 +285,19 @@ namespace Pomerandomian {
 		/// Returns a double between min (inclusive) and max (exclusive).
 		/// </summary>
 		public double NextDouble(double min, double max) {
-			return NextDouble() * (max - min) + min;
+			// Split the multiply-add into separate roundings so it's more likely to be deterministic.
+			double scaled = NextDouble() * (max - min);
+			return scaled + min;
 		}
 
 		/// <summary>
 		/// Returns a float between min (inclusive) and max (exclusive).
 		/// </summary>
 		public float Next(float min, float max) {
-			return (float)(NextDouble() * (max - min) + min);
+			// Split the multiply-add into separate roundings so it's more likely to be deterministic.
+			double scaled = NextDouble() * ((double)max - min);
+			double shifted = scaled + min;
+			return (float)shifted;
 		}
 
 		/// <summary>
